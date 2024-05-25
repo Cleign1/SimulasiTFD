@@ -15,7 +15,7 @@ import urllib.request
 import zipfile
 import tensorflow as tf
 import os
-from keras_preprocessing.image import ImageDataGenerator
+from keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.optimizers import RMSprop
 
 
