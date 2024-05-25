@@ -1,6 +1,6 @@
-env/
+env
 
-
+.vscode
 *.h5
 
 Submission A/data/
