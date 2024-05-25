@@ -1,0 +1,15 @@
+env/
+
+
+*.h5
+
+Submission A/data/
+Submission A/validation-horse-or-human.zip
+Submission A/horse-or-human.zip
+Submission A/inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5
+
+## Beda Folder
+Submission-A-IPYNB/data/
+Submission-A-IPYNB/validation-horse-or-human.zip
+Submission-A-IPYNB/horse-or-human.zip
+Submission-A-IPYNB/inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5
