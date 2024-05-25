@@ -35,13 +35,15 @@ def solution_A5():
     sunspots = []
 
     with open('sunspots.csv') as csvfile:
-      reader = csv.reader(csvfile, delimiter=',')
-      next(reader)
-      for row in reader:
-        sunspots.append(  # YOUR CODE HERE)
-        time_step.append(  # YOUR CODE HERE)
+        reader = csv.reader(csvfile, delimiter=',')
+        next(reader)
+        for row in reader:
+        # YOUR CODE HERE
+            sunspots.append(float(row[2]))
+        # YOUR CODE HERE
+            time_step.append(int(row[0]))
 
-    series=  # YOUR CODE HERE
+    series= np.array(sunspots)
 
     # Normalization Function. DO NOT CHANGE THIS CODE
     min=np.min(series)
@@ -54,10 +56,10 @@ def solution_A5():
     split_time=3000
 
 
-    time_train=  # YOUR CODE HERE
-    x_train=  # YOUR CODE HERE
-    time_valid=  # YOUR CODE HERE
-    x_valid=  # YOUR CODE HERE
+    time_train = time[:split_time]
+    x_train = series[:split_time]
+    time_valid = time[split_time:]
+    x_valid = series[split_time:]
 
     # DO NOT CHANGE THIS CODE
     window_size=30
@@ -68,12 +70,23 @@ def solution_A5():
     train_set=windowed_dataset(x_train, window_size=window_size,
                                batch_size=batch_size, shuffle_buffer=shuffle_buffer_size)
 
-
-    model=tf.keras.models.Sequential([
-      # YOUR CODE HERE.
-      tf.keras.layers.Dense(1)
+    model = tf.keras.models.Sequential([
+        tf.keras.layers.Conv1D(filters=64, kernel_size=3, strides=1, activation="relu", padding='causal',
+                                input_shape=[None, 1]),
+        tf.keras.layers.LSTM(64, return_sequences=True, dropout=0.2),
+        tf.keras.layers.LSTM(64, return_sequences= True),
+        tf.keras.layers.Dense(128, activation="relu"),
+        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Dense(10, activation="relu"),
+        # YOUR CODE HERE.
+        tf.keras.layers.Dense(1)
     ])
-
+    
+    optimizer = tf.keras.optimizers.SGD(learning_rate=1e-5, momentum=0.9)
+    
+    model.compile(loss=tf.keras.losses.Huber(), optimizer="adam", metrics=["mae"])
+    
+    model.fit(train_set, epochs=100)
     # YOUR CODE
     
     return model
