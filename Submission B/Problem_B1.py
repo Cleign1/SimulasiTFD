@@ -26,8 +26,24 @@ def solution_B1():
     Y = np.array([5.0, 7.0, 9.0, 11.0, 13.0, 15.0, 17.0], dtype=float)
 
     # YOUR CODE HERE
+    class myCallback(tf.keras.callbacks.Callback):
+        def on_epoch_end(self, epoch, logs={}):
+            if (logs.get('loss') < 1e-4):
+                print("\nMSE Loss < 1E-4")
+                print("\nTraining Selesai")
+                self.model.stop_training = True
+                
+    callbacks = myCallback()
+    model = keras.Sequential([
+        tf.keras.layers.Dense(1, input_shape=[1])
+    ])
 
-    print(model.predict([-2.0, 10.0]))
+    model.compile(optimizer='sgd', loss='mean_squared_error')
+    model.fit(X, Y, epochs= 2000, callbacks=callbacks)
+
+    predicted = np.array([-2.0, 10.0])
+
+    print(model.predict(predicted))
     return model
 
 
