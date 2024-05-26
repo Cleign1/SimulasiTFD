@@ -40,11 +40,15 @@ def solution_B5():
         next(reader)
         step = 0
         for row in reader:
-            temps.append(  # YOUR CODE HERE)
-            time_step.append(  # YOUR CODE HERE)
+            # YOUR CODE HERE
+            temps.append(float(row[1]))
+            # YOUR CODE HERE
+            time_step.append(step)
             step=step + 1
 
-    series=# YOUR CODE HERE
+
+    # YOUR CODE HERE
+    series= np.array(temps)
 
     # Normalization Function. DO NOT CHANGE THIS CODE
     min=np.min(series)
@@ -56,10 +60,11 @@ def solution_B5():
     # DO NOT CHANGE THIS CODE
     split_time=2500
 
-    time_train=# YOUR CODE HERE
-    x_train=# YOUR CODE HERE
-    time_valid=# YOUR CODE HERE
-    x_valid=# YOUR CODE HERE
+    # YOUR CODE HERE
+    time_train= time[:split_time]
+    x_train=series[:split_time]
+    time_valid=time[split_time:]
+    x_valid=series[split_time:]
 
     # DO NOT CHANGE THIS CODE
     window_size=64
@@ -72,10 +77,24 @@ def solution_B5():
 
     model=tf.keras.models.Sequential([
         # YOUR CODE HERE.
+        tf.keras.layers.Conv1D(filters = 32, kernel_size = 5, 
+                            strides = 1, padding='causal',
+                            activation='relu',
+                            input_shape=[None, 1]),
+        tf.keras.layers.LSTM(64, return_sequences=True),
+        tf.keras.layers.LSTM(64, return_sequences=True),
+        tf.keras.layers.LSTM(128, return_sequences=True),
+        tf.keras.layers.LSTM(128),
+        tf.keras.layers.Dense(30, activation='relu'),
+        tf.keras.layers.Dense(10, activation='relu'),
         tf.keras.layers.Dense(1),
     ])
 
+    model.compile(loss=tf.keras.losses.Huber(), optimizer='adam', metrics= ["mae"])
+
+
     # YOUR CODE HERE
+    model.fit(train_set, epochs=10)
     return model
 
 
