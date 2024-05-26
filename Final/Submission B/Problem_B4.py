@@ -10,19 +10,21 @@
 # Desired accuracy and validation_accuracy > 91%
 # ===================================================================================================
 
+import urllib
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import tensorflow as tf
 import pandas as pd
 import csv
-import urllib
 import numpy as np
 
 
 def solution_B4():
-    bbc = ('https://github.com/dicodingacademy/assets/raw/main/Simulation/machine_learning/bbc-text.csv')
+    # bbc = pd.read_csv('https://github.com/dicodingacademy/assets/raw/main/Simulation/machine_learning/bbc-text.csv')
+    bbc = "https://github.com/dicodingacademy/assets/raw/main/Simulation/machine_learning/bbc-text.csv"
     urllib.request.urlretrieve(bbc, 'bbc-text.csv')
+
 
     # DO NOT CHANGE THIS CODE
     # Make sure you used all of these parameters or you can not pass this test
@@ -44,10 +46,10 @@ def solution_B4():
                 "then", "there", "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", 
                 "we", "we'd", "we'll", "we're", "we've", "were", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's", 
                 "with", "would", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves" ]
-
+    
     sentences = []
-    labels =[]
-
+    labels = []
+    
     with open('bbc-text.csv', 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         next(reader)
@@ -58,6 +60,11 @@ def solution_B4():
                 token = " " + word + " "
                 sentence = sentence.replace(token, " ")
             sentences.append(sentence)
+    
+    
+    # for index, row in bbc.iterrows():
+    #     labels.append(row[0])
+    #     sentences.append(row[1])
     
     train_size = int(len(sentences) * training_portion)
 
@@ -89,8 +96,8 @@ def solution_B4():
     
     class Custom_callback(tf.keras.callbacks.Callback):
         def on_epoch_end(self, epoch, logs={}):
-            if (logs.get('val_accuracy') > 0.9350):
-                print("\nVal Accuracy > 95%")
+            if (logs.get('val_accuracy') > 0.93):
+                print("\nVal Accuracy > 93%")
                 print("\nTraining Selesai")
                 self.model.stop_training = True
                 

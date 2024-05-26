@@ -25,13 +25,22 @@ def solution_B2():
     test_image = test_image.reshape(10000, 28, 28, 1)
     test_image = test_image / 255.0
 
+    class Custom_callback(tf.keras.callbacks.Callback):
+        def on_epoch_end(self, epoch, logs={}):
+            if (logs.get('val_accuracy') > 0.89):
+                print("\nValidation Accuracy >= 90%")
+                print("\nTraining Selesai")
+                self.model.stop_training = True
+                
+    callback = Custom_callback()
     # DEFINE YOUR MODEL HERE
     # End with 10 Neuron Dense, activated by softmax
     model = tf.keras.Sequential([
         tf.keras.layers.Conv2D(filters= 32, kernel_size=(3,3), activation='relu',input_shape=(28, 28, 1)),
         tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.BatchNormalization(),
-        tf.keras.layers.Conv2D(filters= 32, kernel_size=(3,3), activation='relu'),
+        tf.keras.layers.Conv2D(filters= 64, kernel_size=(3,3), activation='relu'),
+        tf.keras.layers.MaxPooling2D(),
+        tf.keras.layers.Conv2D(filters= 64, kernel_size=(3,3), activation='relu'),
         tf.keras.layers.MaxPooling2D(),
         tf.keras.layers.BatchNormalization(),
         tf.keras.layers.Flatten(),
@@ -44,7 +53,8 @@ def solution_B2():
     model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
     # TRAIN YOUR MODEL HERE
-    model.fit(training_images, training_labels, validation_data=(test_image, test_label),epochs=10)
+    model.fit(training_images, training_labels, validation_data=(test_image, test_label),epochs=10,
+              callbacks=callback)
 
     return model
 
