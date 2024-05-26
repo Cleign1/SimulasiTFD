@@ -86,6 +86,15 @@ def solution_B4():
 
     train_label_seq = np.array(label_tokenizer.texts_to_sequences(train_labels))
     validation_label_seq = np.array(label_tokenizer.texts_to_sequences(validation_labels))
+    
+    class Custom_callback(tf.keras.callbacks.Callback):
+        def on_epoch_end(self, epoch, logs={}):
+            if (logs.get('val_accuracy') > 0.9350):
+                print("\nVal Accuracy > 95%")
+                print("\nTraining Selesai")
+                self.model.stop_training = True
+                
+    callback = Custom_callback()
 
     model = tf.keras.Sequential([
         # YOUR CODE HERE.
@@ -103,7 +112,8 @@ def solution_B4():
     
     model.fit(train_padded, train_label_seq,
               epochs=50,
-              validation_data = (validation_padded, validation_label_seq))
+              validation_data = (validation_padded, validation_label_seq),
+              callbacks=callback)
 
     return model
 
