@@ -19,20 +19,20 @@ def solution_B2():
     (training_images, training_labels), (test_image, test_label) = fashion_mnist.load_data()
 
     # NORMALIZE YOUR IMAGE HERE
-    training_images = training_images.reshape(60000, 28, 28, 1)
+    # training_images = training_images.reshape(60000, 28, 28, 1)
     training_images = training_images / 255.0
 
-    test_image = test_image.reshape(10000, 28, 28, 1)
+    # test_image = test_image.reshape(10000, 28, 28, 1)
     test_image = test_image / 255.0
 
-    class Custom_callback(tf.keras.callbacks.Callback):
-        def on_epoch_end(self, epoch, logs={}):
-            if (logs.get('val_accuracy') > 0.89):
-                print("\nValidation Accuracy >= 90%")
-                print("\nTraining Selesai")
-                self.model.stop_training = True
+    # class Custom_callback(tf.keras.callbacks.Callback):
+    #     def on_epoch_end(self, epoch, logs={}):
+    #         if (logs.get('val_accuracy') > 0.89):
+    #             print("\nValidation Accuracy >= 90%")
+    #             print("\nTraining Selesai")
+    #             self.model.stop_training = True
                 
-    callback = Custom_callback()
+    # callback = Custom_callback()
     # DEFINE YOUR MODEL HERE
     # End with 10 Neuron Dense, activated by softmax
     model = tf.keras.Sequential([
@@ -40,12 +40,8 @@ def solution_B2():
         tf.keras.layers.MaxPooling2D(),
         tf.keras.layers.Conv2D(filters= 64, kernel_size=(3,3), activation='relu'),
         tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.Conv2D(filters= 64, kernel_size=(3,3), activation='relu'),
-        tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.BatchNormalization(),
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(units= 128, activation='relu'),
-        tf.keras.layers.Dropout(0.2),
         tf.keras.layers.Dense(units=10, activation='softmax')
     ])
 
@@ -54,7 +50,8 @@ def solution_B2():
 
     # TRAIN YOUR MODEL HERE
     model.fit(training_images, training_labels, validation_data=(test_image, test_label),epochs=10,
-              callbacks=callback)
+            #   callbacks=callback
+             )
 
     return model
 
