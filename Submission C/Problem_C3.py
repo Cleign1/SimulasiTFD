@@ -19,29 +19,72 @@ import os
 from tensorflow.keras.optimizers import RMSprop
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+class custom_callback(tf.keras.callbacks.Callback):
+    def on_epoch_end(self, epoch, logs={}):
+        if (logs.get('accuracy') > 0.72 and logs.get('val_accuracy') > 0.72):
+            print("\nTraining Selesai")
+            self.model.stop_training = True
+
 
 def solution_C3():
-    data_url = 'https://github.com/dicodingacademy/assets/raw/main/Simulation/machine_learning/cats_and_dogs.zip'
-    urllib.request.urlretrieve(data_url, 'cats_and_dogs.zip')
-    local_file = 'cats_and_dogs.zip'
-    zip_ref = zipfile.ZipFile(local_file, 'r')
-    zip_ref.extractall('data/')
-    zip_ref.close()
+    # data_url = 'https://github.com/dicodingacademy/assets/raw/main/Simulation/machine_learning/cats_and_dogs.zip'
+    # urllib.request.urlretrieve(data_url, 'cats_and_dogs.zip')
+    # local_file = 'cats_and_dogs.zip'
+    # zip_ref = zipfile.ZipFile(local_file, 'r')
+    # zip_ref.extractall('data/')
+    # zip_ref.close()
 
     BASE_DIR = 'data/cats_and_dogs_filtered'
     train_dir = os.path.join(BASE_DIR, 'train')
     validation_dir = os.path.join(BASE_DIR, 'validation')
 
-    train_datagen =  # YOUR CODE HERE
-
+    # YOUR CODE HERE
+    train_datagen = ImageDataGenerator(rescale=1.0/255.0,
+                                       rotation_range=45,
+                                       width_shift_range=0.2,
+                                       height_shift_range=0.2,
+                                       shear_range=0.2,
+                                       zoom_range=0.2,
+                                       horizontal_flip=True,
+                                       fill_mode='nearest'
+                                       )
     # YOUR IMAGE SIZE SHOULD BE 150x150
     # Make sure you used "binary"
-    train_generator =  # YOUR CODE HERE
+    # YOUR CODE HERE
+    train_generator = train_datagen.flow_from_directory(directory=train_dir,
+                                                        batch_size=20,
+                                                        class_mode='binary',
+                                                        target_size=(150, 150)
+                                                        )
+
+    validation_datagen = ImageDataGenerator(rescale= 1.0/255.0)
+
+    validation_generator = validation_datagen.flow_from_directory(directory=validation_dir,
+                                                                  batch_size=20,
+                                                                  class_mode='binary',
+                                                                  target_size=(150, 150))
 
     model = tf.keras.models.Sequential([
         # YOUR CODE HERE, end with a Neuron Dense, activated by 'sigmoid'
+        tf.keras.layers.Conv2D(32, (3,3), activation='relu', input_shape=(150, 150, 3)),
+        tf.keras.layers.MaxPooling2D(2,2),
+        tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
+        tf.keras.layers.MaxPooling2D(2,2),
+        tf.keras.layers.Conv2D(128, (3,3), activation='relu'),
+        tf.keras.layers.MaxPooling2D(2,2),
+        tf.keras.layers.Conv2D(128, (3,3), activation='relu'),
+        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(256, activation='relu'),
         tf.keras.layers.Dense(1, activation='sigmoid')
     ])
+
+    callbacks = custom_callback()
+
+    model.compile(optimizer=RMSprop(learning_rate=1e-4), loss='binary_crossentropy',
+                  metrics=['accuracy'])
+
+    model.fit(train_generator, validation_data=validation_generator, epochs=50, callbacks=callbacks)
 
     return model
 
