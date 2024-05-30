@@ -20,6 +20,13 @@ import zipfile
 import pandas as pd
 import tensorflow as tf
 
+
+class custom_callback(tf.keras.callbacks.Callback):
+    def on_epoch_end(self, epoch, logs={}):
+        if (logs.get('mae') < 0.09 and logs.get('val_mae') < 0.09):
+            print("\nTraining Selesai")
+            self.model.stop_training = True
+
 # This function downloads and extracts the dataset to the directory that contains this file.
 # DO NOT CHANGE THIS CODE
 # (unless you need to change the URL)
@@ -40,7 +47,15 @@ def normalize_series(data, min, max):
 # COMPLETE THE CODE IN THE FOLLOWING FUNCTION.
 def windowed_dataset(series, batch_size, n_past=24, n_future=24, shift=1):
     # YOUR CODE HERE
-    return # YOUR CODE HERE
+    ds = tf.data.Dataset.from_tensor_slices(series)
+    ds = ds.window(n_past + n_future, shift=shift, drop_remainder=True)
+    ds = ds.flat_map(lambda window: window.batch(n_past + n_future))
+    ds = ds.shuffle(1000)
+    ds = ds.map(lambda window: (window[:-n_future], window[-n_future:, :1]))
+    ds = ds.batch(batch_size).prefetch(1)
+
+    # YOUR CODE HERE
+    return ds
 
 # COMPLETE THE CODE IN THE FOLLOWING FUNCTION.
 def solution_C5():
@@ -52,7 +67,8 @@ def solution_C5():
 
     # Number of features in the dataset. We use all features as predictors to
     # predict all features at future time steps.
-    N_FEATURES = # YOUR CODE HERE
+    # YOUR CODE HERE
+    N_FEATURES = 7
 
     # Normalizes the data
     # DO NOT CHANGE THIS
@@ -61,8 +77,9 @@ def solution_C5():
     data = normalize_series(data, data.min(axis=0), data.max(axis=0))
 
     # Splits the data into training and validation sets.
-    x_train = # YOUR CODE HERE
-    x_valid = # YOUR CODE HERE
+    # YOUR CODE HERE
+    x_train = data[:split_time]
+    x_valid = data[split_time:]
 
     # DO NOT CHANGE THIS
     BATCH_SIZE = 32  
@@ -72,18 +89,30 @@ def solution_C5():
 
     # Code to create windowed train and validation datasets.
     # Complete the code in windowed_dataset.
-    train_set = # YOUR CODE HERE
-    valid_set = # YOUR CODE HERE
+    # YOUR CODE HERE
+    train_set = windowed_dataset(x_train, BATCH_SIZE, N_PAST, N_FUTURE, SHIFT)
+    valid_set = windowed_dataset(x_valid, BATCH_SIZE, N_PAST, N_FUTURE, SHIFT)
+
+    callbacks = custom_callback()
 
     # Code to define your model.
     model = tf.keras.models.Sequential([
         # Whatever your first layer is, the input shape will be (N_PAST = 24, N_FEATURES = 7)
         # YOUR CODE HERE
+        tf.keras.layers.LSTM(50, activation='relu', input_shape=[N_PAST, N_FEATURES]),
+        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Dense(50, activation='relu'),
         tf.keras.layers.Dense(N_FUTURE),
     ])
 
     # Code to train and compile the model
     # YOUR CODE HERE
+    model.compile(optimizer='adam',
+                  loss='mae',
+                  metrics=['mae'])
+
+    model.fit(train_set, epochs=20, validation_data=valid_set, callbacks=callbacks)
+
     return model
 
 # The code below is to save your model as a .h5 file.

@@ -6,7 +6,9 @@ env
 *.zip
 *.csv
 *.json
+*.txt
 
+__MACOSX
 ## Beda Folder
 Submission A/data/
 Submission B/data/
