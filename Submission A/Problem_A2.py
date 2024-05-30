@@ -34,38 +34,38 @@ def solution_A2():
     zip_ref.close()
 
     TRAINING_DIR = 'data/horse-or-human'
-    train_datagen = ImageDataGenerator(rescale=1/255)
+    train_datagen = ImageDataGenerator(rescale=1 / 255)
 
     # YOUR IMAGE SIZE SHOULD BE 150x150
     train_generator = train_datagen.flow_from_directory('data/horse-or-human',
-                                                    batch_size=128,
-                                                    class_mode='binary',
-                                                    target_size=(150, 150))
-    
-    validation_datagen = ImageDataGenerator(rescale=1/255)
+                                                        batch_size=128,
+                                                        class_mode='binary',
+                                                        target_size=(150, 150))
+
+    validation_datagen = ImageDataGenerator(rescale=1 / 255)
 
     validation_generator = validation_datagen.flow_from_directory('data/validation-horse-or-human',
-                                                              batch_size=32,
-                                                              class_mode='binary',
-                                                              target_size=(150, 150))
+                                                                  batch_size=32,
+                                                                  class_mode='binary',
+                                                                  target_size=(150, 150))
 
     model = tf.keras.models.Sequential([
         # Note the input shape is the desired size of the image 150x150 with 3 bytes color
         # No.1 Conv2D
-        tf.keras.layers.Conv2D(16, (3,3), activation='relu', input_shape=(150, 150, 3)),
+        tf.keras.layers.Conv2D(16, (3, 3), activation='relu', input_shape=(150, 150, 3)),
         tf.keras.layers.MaxPooling2D(2, 2),
         # No.2 Conv2D
-        tf.keras.layers.Conv2D(32, (3,3), activation='relu'),
-        tf.keras.layers.MaxPooling2D(2,2),
+        tf.keras.layers.Conv2D(32, (3, 3), activation='relu'),
+        tf.keras.layers.MaxPooling2D(2, 2),
         # No.3 Conv2D
-        tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
-        tf.keras.layers.MaxPooling2D(2,2),
+        tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+        tf.keras.layers.MaxPooling2D(2, 2),
         # No.4 Conv2D
-        tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
-        tf.keras.layers.MaxPooling2D(2,2),
+        tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+        tf.keras.layers.MaxPooling2D(2, 2),
         # No.5 Conv2D
-        tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
-        tf.keras.layers.MaxPooling2D(2,2),
+        tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+        tf.keras.layers.MaxPooling2D(2, 2),
         # Flatten
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(512, activation='relu'),
@@ -74,14 +74,14 @@ def solution_A2():
     ])
 
     model.compile(optimizer=RMSprop(learning_rate=0.001),
-                  loss = 'binary_crossentropy',
-                  metrics = ['accuracy'])
-    
+                  loss='binary_crossentropy',
+                  metrics=['accuracy'])
+
     model.fit(train_generator,
-              steps_per_epoch=8,  
+              steps_per_epoch=8,
               epochs=10,
               verbose=1,
-              validation_data = validation_generator,
+              validation_data=validation_generator,
               validation_steps=8)
 
     return model
@@ -91,5 +91,5 @@ def solution_A2():
 # It will be saved automatically in your Submission folder.
 if __name__ == '__main__':
     # DO NOT CHANGE THIS CODE
-    model=solution_A2()
+    model = solution_A2()
     model.save("model_A2.h5")
