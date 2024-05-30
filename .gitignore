@@ -5,6 +5,7 @@ env
 *.h5
 *.zip
 *.csv
+*.json
 
 ## Beda Folder
 Submission A/data/
