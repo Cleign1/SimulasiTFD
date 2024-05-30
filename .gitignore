@@ -1,6 +1,7 @@
 env
 
 .vscode
+.idea
 *.h5
 *.zip
 *.csv
@@ -8,5 +9,7 @@ env
 ## Beda Folder
 Submission A/data/
 Submission B/data/
+Submission C/data/
 Submission-A-IPYNB/data/
 Submission-B-IPYNB/data
+Submission-C-IPYNB/data
