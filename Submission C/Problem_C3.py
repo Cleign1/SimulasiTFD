@@ -27,12 +27,12 @@ class custom_callback(tf.keras.callbacks.Callback):
 
 
 def solution_C3():
-    # data_url = 'https://github.com/dicodingacademy/assets/raw/main/Simulation/machine_learning/cats_and_dogs.zip'
-    # urllib.request.urlretrieve(data_url, 'cats_and_dogs.zip')
-    # local_file = 'cats_and_dogs.zip'
-    # zip_ref = zipfile.ZipFile(local_file, 'r')
-    # zip_ref.extractall('data/')
-    # zip_ref.close()
+    data_url = 'https://github.com/dicodingacademy/assets/raw/main/Simulation/machine_learning/cats_and_dogs.zip'
+    urllib.request.urlretrieve(data_url, 'cats_and_dogs.zip')
+    local_file = 'cats_and_dogs.zip'
+    zip_ref = zipfile.ZipFile(local_file, 'r')
+    zip_ref.extractall('data/')
+    zip_ref.close()
 
     BASE_DIR = 'data/cats_and_dogs_filtered'
     train_dir = os.path.join(BASE_DIR, 'train')
